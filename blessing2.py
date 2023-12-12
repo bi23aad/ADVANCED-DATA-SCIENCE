@@ -5,14 +5,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from stats import skew, kurtosis, bootstrap
 
-
-
-
 def import_data(filename):
     """
     Load the csv file downloaded from the worldbank database, clean 
     and transpose the data.
-
 
     Returns:
         data (DataFrame) : A Dataframe of the cleaned original worldbank, with
@@ -66,7 +62,6 @@ def import_data(filename):
     # Return both Dataframes
     return brics_data, transposed_brics_data
 
-
 # Function to explore statistical properties of each indicators
 def exploration(data):
     """
@@ -112,7 +107,6 @@ def exploration(data):
     return descriptives, bootstrap_result
 
 # Function to compare indicators using correlation analysis
-
 
 def comparison(data):
     """
@@ -196,9 +190,6 @@ def comparison(data):
 
     return pivot_brics_data
 
-
-
-
 # Function visualize the data based grouped by indicators
 def visualize_by_indicator(data):
     """
@@ -234,7 +225,6 @@ def visualize_by_indicator(data):
         plt.ylabel(None)
         plt.tight_layout()
         plt.show()
-
 
 # Function visualize the data based grouped by countries
 def visualize_by_country(data):
@@ -283,7 +273,6 @@ def visualize_by_country(data):
         plt.legend()
 
         plt.tight_layout()
-
 
 # Implementation
 brics, transposed_brics = import_data("brics2")
