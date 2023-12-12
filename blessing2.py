@@ -1,18 +1,18 @@
-# Import necessary modules
+#importing needed packages
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from stats import skew, kurtosis, bootstrap
 
-def import_data(brics2):
+
+
+
+def import_data(filename):
     """
     Load the csv file downloaded from the worldbank database, clean 
     and transpose the data.
 
-    Args:
-        filename (string): The name of the csv file, located in the same
-        directory.
 
     Returns:
         data (DataFrame) : A Dataframe of the cleaned original worldbank, with
@@ -20,9 +20,8 @@ def import_data(brics2):
         transposed_data (DataFrame) : A DataFrame with the countries as columns
     """
 
-    # Create the full filename with extension using formatted string
-    #file = f"{brics2}.csv"
-    brics_data = pd.read_csv(brics2)
+    #read csv file
+    brics_data = pd.read_csv("brics2.csv")
 
     # Replace non-number with pd.NA
     brics_data = brics_data.replace('..', pd.NA)
@@ -33,10 +32,12 @@ def import_data(brics2):
                                          'Country Name', 'Country Code'],
                                 var_name='Year',
                                 value_name='Value')
+    print(melted_brics_data)
 
     # Extract year from column names
     melted_brics_data['Year'] = melted_brics_data['Year'].str.extract(
         r'(\d{4})')
+    print(melted_brics_data['Year'])
 
     # Convert 'Year' to numeric
     melted_brics_data['Year'] = pd.to_numeric(
@@ -50,6 +51,7 @@ def import_data(brics2):
         values='Value',
         aggfunc='first')
     print(transposed_brics_data)
+
     # Reset index for a clean structure
     transposed_brics_data.reset_index(inplace=True)
 
@@ -91,6 +93,7 @@ def exploration(data):
     # using .describe()
     descriptives = df.describe()
     print(descriptives)
+
     # Use the bootstrap function from the stats.py module to
     # calculate statistical properties of the distribution
     kurtosis_list = [
@@ -105,6 +108,7 @@ def exploration(data):
                                      'Skewness': skewness_list,
                                      'Kurtosis': kurtosis_list})
     print(bootstrap_result)
+
     return descriptives, bootstrap_result
 
 # Function to compare indicators using correlation analysis
@@ -187,10 +191,49 @@ def comparison(data):
                     square=True, linewidths=.5, cbar_kws={"shrink": .5}, annot=True)
 
         plt.title(
-            f"Correlation Matrix of indicators for {country}")
+            f"Correlation Matrix of indicators for {country}",  fontsize = 25)
         plt.tight_layout()
 
     return pivot_brics_data
+
+
+
+
+# Function visualize the data based grouped by indicators
+def visualize_by_indicator(data):
+    """
+    Create Visualizations for storytelling.
+
+    Args:
+        data (DataFrame): The transposed DataFrame.
+        countries (List): A list of countries to examine.
+        series_list (List): A list of the series names of the indicators to
+        examine.
+
+    Returns:
+
+    """
+    # Create a new data frame of the country and parsed series
+    countries = ['Brazil', 'Russian Federation',
+                 'India', 'China', 'South Africa']
+
+    indicators = ['Arable land (% of land area)',
+                  'Urban population (% of total population)',
+                  'Renewable energy consumption (% of total final energy consumption)',
+                  'CO2 intensity (kg per kg of oil equivalent energy use)',
+                  'Total greenhouse gas emissions (kt of CO2 equivalent)']
+
+    # Plot barchart
+    plt.figure(figsize=(15, 9))
+
+    # Loop through the variables and plot
+    for variable in indicators:
+        sns.barplot(x='Country Name', y=variable,
+                    hue='Year', data=data, width=.4)
+        plt.title(f'{variable}',  fontsize = 25)
+        plt.ylabel(None)
+        plt.tight_layout()
+        plt.show()
 
 
 # Function visualize the data based grouped by countries
@@ -231,10 +274,10 @@ def visualize_by_country(data):
                          label=variable)
 
         # Add labels and title
-        plt.xlabel('Year')
-        plt.ylabel('Values')
+        plt.xlabel('Year', fontsize = 25)
+        plt.ylabel('Values', fontsize = 25)
         plt.title(
-            f"Trend for {indicator} over the years")
+            f"Trend for {indicator} over the years",  fontsize = 25)
 
         # Add a legend
         plt.legend()
@@ -243,7 +286,7 @@ def visualize_by_country(data):
 
 
 # Implementation
-brics, transposed_brics = import_data("brics2.csv")
+brics, transposed_brics = import_data("brics2")
 
 descriptives, stats_df = exploration(transposed_brics)
 
@@ -255,5 +298,13 @@ selected_indicators = ['Arable land (% of land area)',
                        'Total greenhouse gas emissions (kt of CO2 equivalent)']
 
 new_brics = comparison(brics)
+
+visualize_by_indicator(new_brics)
+
 visualize_by_country(transposed_brics)
 
+# # Function to filter the data
+# def filter_data(data, series_name):
+#     filtered_data = data[data['Series Name'] == series_name]
+
+#     return filtered_data
